@@ -286,10 +286,10 @@ method A() {
             (expression)
             (expression))))))
 ===
-Method.  Forall such as specification.
+Method.  Forall specification.
 ===
 method A()
-  forall a | i < j {}
+  forall a :: i < j
 {}
 ---
 (source_file
@@ -298,24 +298,24 @@ method A()
       (args)
       (specification
         (forall_spec
-          (expression)
-          (body)))
+          (expression)))
       (body)))
 ===
-Method.  Forall in specification.
+Method.  Forall instruction.
 ===
 method A()
+{
   forall e <- s {}
-{}
+}
 ---
 (source_file
     (method
       (identifier)
       (args)
-      (specification
-        (forall_spec
-          (body)))
-      (body)))
+      (body
+        (instruction
+          (instruction_forall
+            (body))))))
 ===
 Method.  Label without parentheses.
 ===

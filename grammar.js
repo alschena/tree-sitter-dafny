@@ -84,9 +84,17 @@ module.exports = grammar({
     forall_spec: ($) =>
       seq(
         "forall",
-        choice(seq($._id, "|", $.expression), seq($._id, "<-", $._id)),
-        $.body,
+        seq(
+          choice($._id, $._typed_variable, $._constraint_variable),
+          "::",
+          $.expression,
+        ),
       ),
+
+    instruction_forall: ($) => seq("forall", $._constraint_variable, $.body),
+
+    _constraint_variable: ($) =>
+      choice(seq($._id, "|", $.expression), seq($._id, "<-", $._id)),
 
     body: ($) => seq(curly_wrap(repeat($.instruction))),
 
@@ -98,6 +106,7 @@ module.exports = grammar({
           seq($.assignment, ";"),
           $.instruction_conditional,
           $.instruction_loop,
+          $.instruction_forall,
           $.instruction_spec,
           seq($.expression, ";"),
           $.label,
