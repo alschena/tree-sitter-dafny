@@ -1,55 +1,46 @@
 ===
-Method.  Empty, no arguments, no return variables.
+Method.  Empty, no arguments, no return identifiers.
 ===
 method A () {}
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
-      (body))))
+      (body)))
 ===
-Method.  More than one argument, no return variables.
+Method.  More than one argument, no return identifiers.
 ===
 method A (a: Int, b: Int) {}
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
-      (body))))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
+      (body)))
 ===
-Method.  More than one argument, more than one return variables.
+Method.  More than one argument, more than one return identifiers.
 ===
 method A (a: Int, b: Int) returns (c: Int, d: Int) {}
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
-      (body))))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
+      (body)))
 ===
 Method.  Simple specification
 ===
@@ -60,26 +51,21 @@ method A (a: Int, b: Int) returns (c: Int, d: Int)
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
       (specification
         (expression))
-      (body))))
+      (body)))
 ===
 Method.  Simple assignment.
 ===
@@ -90,30 +76,25 @@ method A (a: Int, b: Int) returns (c: Int, d: Int)
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
       (specification
         (expression))
       (body
         (instruction
           (assignment
-            (variable)
-            (expression)))))))
+            (identifier)
+            (expression))))))
 ===
 Method.  Multiple parallel assignment.
 ===
@@ -124,32 +105,27 @@ method A (a: Int, b: Int) returns (c: Int, d: Int)
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
       (specification
         (expression))
       (body
         (instruction
           (assignment
-            (variable)
-            (variable)
+            (identifier)
+            (identifier)
             (expression)
-            (expression)))))))
+            (expression))))))
 ===
 Method.  Assignment with method call as source.
 ===
@@ -158,35 +134,33 @@ method A () {
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
           (assignment
-            (variable)
-            (method_call
-              (top_level_name)
-              (args))))))))
+            (identifier)
+            (expression
+              (identifier)
+              (args)))))))
 ===
-Method.  Variable declaration and assignment.
+Method.  identifier declaration and assignment.
 ===
 method A () {
   var a := b;
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
           (variable_declaration
             (assignment
-              (variable)
-              (expression))))))))
+              (identifier)
+              (expression)))))))
 ===
 Method.  Empty if instruction.
 ===
@@ -197,16 +171,15 @@ method A () {
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
           (instruction_conditional
             (expression)
             (body)
-            (body)))))))
+            (body))))))
 ===
 Method.  Match conditional.
 ===
@@ -218,9 +191,8 @@ method A() {
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
@@ -228,13 +200,13 @@ method A() {
             (body
               (instruction
                 (assignment
-                  (variable)
+                  (identifier)
                   (expression))))
             (body
               (instruction
                 (assignment
-                  (variable)
-                  (expression))))))))))
+                  (identifier)
+                  (expression)))))))))
 ===
 Method.  While loop
 ===
@@ -243,15 +215,14 @@ method A() {
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
           (instruction_loop
             (expression)
-            (body)))))))
+            (body))))))
 ===
 Method.  Assert statement
 ===
@@ -260,14 +231,13 @@ method A() {
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
           (instruction_spec
-            (expression)))))))
+            (expression))))))
 ===
 Method.  Assume statement
 ===
@@ -276,14 +246,13 @@ method A() {
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
           (instruction_spec
-            (expression)))))))
+            (expression))))))
 ===
 Method.  yield statement.
 ===
@@ -292,15 +261,14 @@ method A() {
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
           (yield
             (expression)
-            (expression)))))))
+            (expression))))))
 ===
 Method.  Return statement.
 ===
@@ -309,15 +277,14 @@ method A() {
 }
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (body
         (instruction
           (return
             (expression)
-            (expression)))))))
+            (expression))))))
 ===
 Method.  Forall such as specification.
 ===
@@ -326,15 +293,14 @@ method A()
 {}
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (specification
         (forall_spec
           (expression)
           (body)))
-      (body))))
+      (body)))
 ===
 Method.  Forall in specification.
 ===
@@ -343,13 +309,14 @@ method A()
 {}
 ---
 (source_file
-  (top_level_declaration
     (method
-      (top_level_name)
+      (identifier)
       (args)
       (specification
         (forall_spec
           (body)))
-      (body))))
-
+      (body)))
+===
+Method.  Label without parentheses.
+===
 

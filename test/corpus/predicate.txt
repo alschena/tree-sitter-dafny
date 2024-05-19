@@ -6,14 +6,11 @@ predicate A (a: Int, b: Int)
 }
 ---
 (source_file
-  (top_level_declaration
     (predicate
-      (top_level_name)
+      (identifier)
       (args
-        (typed_variable
-          (variable)
-          (typing))
-        (typed_variable
-          (variable)
-          (typing)))
-      (body))))
+          (identifier)
+          (type)
+          (identifier)
+          (type))
+      (body)))

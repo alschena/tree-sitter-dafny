@@ -2,16 +2,29 @@ const PREC = {
   CALL: 2,
   EXPRESSION: 2,
 };
+
 const join1 = (node, separator)  => seq(
   node,
   repeat(seq(separator, node))
+);
+
+const curly_wrap = (node) => seq(
+  "{",
+  node,
+  "}"
+);
+
+const round_wrap = (node) => seq(
+  "(",
+  node,
+  ")",
 );
 
 module.exports = grammar({
   name: 'dafny',
   extras: $ => [/\s+/, $.comment],
   rules: {
-    source_file: $ => repeat($.top_level_declaration),
+    source_file: $ => repeat($._top_level_declaration),
 
     // Comments are possibly multi-line
     //
@@ -28,7 +41,7 @@ module.exports = grammar({
       )
     ),
 
-    top_level_declaration: $ => choice(
+    _top_level_declaration: $ => choice(
         $.method,
         $.function,
         $.predicate,
@@ -38,14 +51,14 @@ module.exports = grammar({
 
     module : $ => seq(
       "module",
-      "{",
-      repeat ($.top_level_declaration),
-      "}"
+      curly_wrap(
+        repeat ($._top_level_declaration),
+      ),
     ),
 
     method: $ => seq(
       "method",
-      $.top_level_name,
+      $.identifier,
       $.args,
       optional(seq(
         "returns",
@@ -57,18 +70,18 @@ module.exports = grammar({
 
     function: $ => seq(
       "function",
-      $.top_level_name,
+      $.identifier,
       $.args,
-      $.typing,
+      $._typing,
       repeat($.specification),
-      "{",
-      repeat($.expression),
-      "}",
+      curly_wrap(
+        repeat($.expression),
+      ),
     ),
 
     predicate: $ => seq(
       "predicate",
-      $.top_level_name,
+      $.identifier,
       $.args,
       repeat($.specification),
       $.body
@@ -107,9 +120,9 @@ module.exports = grammar({
     ),
 
     body: $ => seq(
-      "{",
-      repeat($.instruction),
-      "}"
+      curly_wrap(
+        repeat($.instruction),
+      ),
     ),
 
     instruction: $ => seq(
@@ -120,7 +133,7 @@ module.exports = grammar({
         $.instruction_conditional,
         $.instruction_loop,
         $.instruction_spec,
-        seq($.method_call, ";"),
+        seq($.expression, ";"),
         $.return,
         $.yield,
         $.continue,
@@ -131,7 +144,7 @@ module.exports = grammar({
     variable_declaration: $ => seq(
       "var",
       choice(
-        $.typed_variable,
+        $._typed_variable,
         $.assignment,
       ),
     ),
@@ -143,8 +156,8 @@ module.exports = grammar({
 
     assignment: $ => seq(
       join1(choice(
-        $.variable,
-        $.typed_variable,
+        $.identifier,
+        $._typed_variable,
       ), ","),
       choice(
         ":=",
@@ -153,18 +166,17 @@ module.exports = grammar({
       ),
       choice(
           join1(choice(
-          $.typed_variable,
+          $._typed_variable,
           $.expression,
-          $.method_call,
           "*"
         ), ","),
       ),
     ),
 
-    method_call: $ => prec(
+    _method_call: $ => prec(
       PREC.CALL,
-      seq (
-      $.top_level_name,
+      seq(
+      $.identifier,
       $.args,
     )),
 
@@ -172,30 +184,34 @@ module.exports = grammar({
       seq(
       "if",
         choice(
-          $.expression,
-          seq(
-            $.typed_variable,
-            "|",
-            $.method_call,
-          ),
-        ),
+          round_wrap($._if_condition),
+          $._if_condition),
       $.body,
       "else",
       $.body
     ),
       seq("match",
         $._id,
-        "{",
-        repeat1(seq(
-          "case",
-          $._id,
-          "=>",
-          choice (
-          $.instruction,
-          $.body
+        curly_wrap(
+          repeat1(seq(
+            "case",
+            $._id,
+            "=>",
+            choice (
+            $.instruction,
+            $.body
+          ),
+          )),
         ),
-        )),
-        "}"
+      ),
+    ),
+
+    _if_condition: $ => choice(
+      $.expression,
+      seq(
+        $._typed_variable,
+        "|",
+        $.expression,
       ),
     ),
 
@@ -216,6 +232,7 @@ module.exports = grammar({
       $.expression,
       ";"
     ),
+
 
     return: $ => seq(
       "return",
@@ -244,6 +261,7 @@ module.exports = grammar({
       choice(
         join1($._id, $._infix_operator),
         $._id,
+        $._method_call,
       ),
     ),
 
@@ -276,26 +294,24 @@ module.exports = grammar({
     ),
 
     args: $ => seq(
-      "(",
-      optional (join1($.typed_variable, ",")),
-      ")",
+      round_wrap(
+        optional(join1($._typed_variable, ",")),
+      ),
     ),
 
-    typed_variable: $ => seq(
-      $.variable,
-      $.typing
+    _typed_variable: $ => seq(
+      $.identifier,
+      $._typing
     ),
 
-    typing: $ => seq(
+    _typing: $ => seq(
       ":",
-      $._type
+      $.type
     ),
 
-    _type: $ => $._id,
+    type: $ => $._id,
 
-    variable: $ => $._id,
-
-    top_level_name: $ => $._id,
+    identifier: $ => $._id,
 
     _id: $ => /[a-zA-Z_][a-zA-Z0-9_]*/
   }
