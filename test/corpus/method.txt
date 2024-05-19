@@ -319,4 +319,34 @@ method A()
 ===
 Method.  Label without parentheses.
 ===
+method A()
+{
+  label L:
+}
+---
+(source_file
+    (method
+      (identifier)
+      (args)
+      (body
+        (instruction
+          (label
+            (identifier))))))
+===
+Method.  Label parenthesised.
+===
+method A()
+{
+  label L: {}
+}
+---
+(source_file
+    (method
+      (identifier)
+      (args)
+      (body
+        (instruction
+          (label
+            (identifier)
+            (body))))))
 

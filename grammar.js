@@ -134,6 +134,7 @@ module.exports = grammar({
         $.instruction_loop,
         $.instruction_spec,
         seq($.expression, ";"),
+        $.label,
         $.return,
         $.yield,
         $.continue,
@@ -233,6 +234,15 @@ module.exports = grammar({
       ";"
     ),
 
+    label: $ => prec.right(seq(
+      "label",
+      $.identifier,
+      ":",
+      choice(
+        $.body,
+        repeat($.instruction),
+      ),
+    ),),
 
     return: $ => seq(
       "return",
