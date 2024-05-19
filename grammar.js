@@ -3,28 +3,17 @@ const PREC = {
   EXPRESSION: 2,
 };
 
-const join1 = (node, separator)  => seq(
-  node,
-  repeat(seq(separator, node))
-);
+const join1 = (node, separator) => seq(node, repeat(seq(separator, node)));
 
-const curly_wrap = (node) => seq(
-  "{",
-  node,
-  "}"
-);
+const curly_wrap = (node) => seq("{", node, "}");
 
-const round_wrap = (node) => seq(
-  "(",
-  node,
-  ")",
-);
+const round_wrap = (node) => seq("(", node, ")");
 
 module.exports = grammar({
-  name: 'dafny',
-  extras: $ => [/\s+/, $.comment],
+  name: "dafny",
+  extras: ($) => [/\s+/, $.comment],
   rules: {
-    source_file: $ => repeat($._top_level_declaration),
+    source_file: ($) => repeat($._top_level_declaration),
 
     // Comments are possibly multi-line
     //
@@ -33,15 +22,17 @@ module.exports = grammar({
     //
     // A line without '//' ends the current comment.
     // To do that we use [ \t] which matches spaces but does not match \n.
-    comment: $ => token(
-      seq(
-        "//",
-        token.immediate(/[^\n]*/),
-        token.immediate(/(\n[ \t]*--[^\n]*)*/)
-      )
-    ),
+    comment: ($) =>
+      token(
+        seq(
+          "//",
+          token.immediate(/[^\n]*/),
+          token.immediate(/(\n[ \t]*--[^\n]*)*/),
+        ),
+      ),
 
-    _top_level_declaration: $ => choice(
+    _top_level_declaration: ($) =>
+      choice(
         $.method,
         $.function,
         $.predicate,
@@ -49,289 +40,188 @@ module.exports = grammar({
         $.constant_declaration,
       ),
 
-    module : $ => seq(
-      "module",
-      curly_wrap(
-        repeat ($._top_level_declaration),
-      ),
-    ),
+    module: ($) => seq("module", curly_wrap(repeat($._top_level_declaration))),
 
-    method: $ => seq(
-      "method",
-      $.identifier,
-      $.args,
-      optional(seq(
-        "returns",
-        $.args,
-      )),
-      repeat($.specification),
-      $.body
-    ),
-
-    function: $ => seq(
-      "function",
-      $.identifier,
-      $.args,
-      $._typing,
-      repeat($.specification),
-      curly_wrap(
-        repeat($.expression),
-      ),
-    ),
-
-    predicate: $ => seq(
-      "predicate",
-      $.identifier,
-      $.args,
-      repeat($.specification),
-      $.body
-    ),
-
-    specification: $ => choice(
+    method: ($) =>
       seq(
-        choice(
-          "ensures",
-          "requires",
-          "decreases",
-          "invariant",
-          "modifies",
-          "reads",
-        ),
-        $.expression
-      ),
-      $.forall_spec,
-    ),
-
-    forall_spec: $ => seq(
-      "forall",
-      choice(
-        seq(
-          $._id,
-          "|",
-          $.expression,
-        ),
-        seq(
-          $._id,
-          "<-",
-          $._id
-        ),
-      ),
-      $.body
-    ),
-
-    body: $ => seq(
-      curly_wrap(
-        repeat($.instruction),
-      ),
-    ),
-
-    instruction: $ => seq(
-      choice(
-        seq($.variable_declaration, ";"),
-        $.constant_declaration,
-        seq ($.assignment, ";"),
-        $.instruction_conditional,
-        $.instruction_loop,
-        $.instruction_spec,
-        seq($.expression, ";"),
-        $.label,
-        $.return,
-        $.yield,
-        $.continue,
-        $.break,
-      ),
-    ),
-
-    variable_declaration: $ => seq(
-      "var",
-      choice(
-        $._typed_variable,
-        $.assignment,
-      ),
-    ),
-
-    constant_declaration: $ => seq(
-      "const",
-      $.assignment,
-    ),
-
-    assignment: $ => seq(
-      join1(choice(
+        "method",
         $.identifier,
-        $._typed_variable,
-      ), ","),
-      choice(
-        ":=",
-        ":|",
-        ":-"
-      ),
-      choice(
-          join1(choice(
-          $._typed_variable,
-          $.expression,
-          "*"
-        ), ","),
-      ),
-    ),
-
-    _method_call: $ => prec(
-      PREC.CALL,
-      seq(
-      $.identifier,
-      $.args,
-    )),
-
-    instruction_conditional: $ => choice(
-      seq(
-      "if",
-        choice(
-          round_wrap($._if_condition),
-          $._if_condition),
-      $.body,
-      "else",
-      $.body
-    ),
-      seq("match",
-        $._id,
-        curly_wrap(
-          repeat1(seq(
-            "case",
-            $._id,
-            "=>",
-            choice (
-            $.instruction,
-            $.body
-          ),
-          )),
-        ),
-      ),
-    ),
-
-    _if_condition: $ => choice(
-      $.expression,
-      seq(
-        $._typed_variable,
-        "|",
-        $.expression,
-      ),
-    ),
-
-    instruction_loop: $ => seq(
-      choice(
-        "while",
-        seq("for",
-          $.assignment,
-          choice("to", "downto"),
-        ),
-      ),
-      $.expression,
-      $.body,
-    ),
-
-    instruction_spec: $ => seq(
-      choice(
-        "assert",
-        "assume",
-      ),
-      $.expression,
-      ";"
-    ),
-
-    label: $ => prec.right(seq(
-      "label",
-      $.identifier,
-      ":",
-      choice(
+        $.args,
+        optional(seq("returns", $.args)),
+        repeat($.specification),
         $.body,
-        repeat($.instruction),
       ),
-    ),),
 
-    return: $ => seq(
-      "return",
-      optional(join1($.expression, ",")),
-      ";"
-    ),
+    function: ($) =>
+      seq(
+        "function",
+        $.identifier,
+        $.args,
+        $._typing,
+        repeat($.specification),
+        curly_wrap(repeat($.expression)),
+      ),
 
-    yield: $=> seq(
-      "yield",
-      optional(join1($.expression, ",")),
-      ";"
-    ),
+    predicate: ($) =>
+      seq("predicate", $.identifier, $.args, repeat($.specification), $.body),
 
-    continue: $ => seq(
-      "continue",
-      ";"
-    ),
-
-    break: $ => seq(
-      "break",
-      ";"
-    ),
-
-    expression: $ => prec(
-      PREC.EXPRESSION,
+    specification: ($) =>
       choice(
-        join1($._id, $._infix_operator),
-        $._id,
-        $._integer,
-        $._method_call,
+        seq(
+          choice(
+            "ensures",
+            "requires",
+            "decreases",
+            "invariant",
+            "modifies",
+            "reads",
+          ),
+          $.expression,
+        ),
+        $.forall_spec,
       ),
-    ),
 
-    _infix_operator: $ => choice (
-      "<==>",
-      "==>",
-      "<==",
-      "&&",
-      "||",
-      "!",
-      "==",
-      "!=",
-      "<",
-      "<=",
-      ">",
-      ">=",
-      "!!",
-      "in",
-      "!in",
-      "+",
-      "-",
-      "*",
-      "/",
-      "%",
-      "|",
-      "&",
-      "^",
-      "<<",
-      ">>"
-    ),
-
-    args: $ => seq(
-      round_wrap(
-        optional(join1($._typed_variable, ",")),
+    forall_spec: ($) =>
+      seq(
+        "forall",
+        choice(seq($._id, "|", $.expression), seq($._id, "<-", $._id)),
+        $.body,
       ),
-    ),
 
-    _typed_variable: $ => seq(
-      $.identifier,
-      $._typing
-    ),
+    body: ($) => seq(curly_wrap(repeat($.instruction))),
 
-    _typing: $ => seq(
-      ":",
-      $.type
-    ),
+    instruction: ($) =>
+      seq(
+        choice(
+          seq($.variable_declaration, ";"),
+          $.constant_declaration,
+          seq($.assignment, ";"),
+          $.instruction_conditional,
+          $.instruction_loop,
+          $.instruction_spec,
+          seq($.expression, ";"),
+          $.label,
+          $.return,
+          $.yield,
+          $.continue,
+          $.break,
+        ),
+      ),
 
-    type: $ => $._id,
+    variable_declaration: ($) =>
+      seq("var", choice($._typed_variable, $.assignment)),
 
-    identifier: $ => $._id,
+    constant_declaration: ($) => seq("const", $.assignment),
 
-    _integer: $ => seq(
-      optional(token.immediate(choice("-", "+"))),
-      /[0-9]+/,
-    ),
+    assignment: ($) =>
+      seq(
+        join1(choice($.identifier, $._typed_variable), ","),
+        choice(":=", ":|", ":-"),
+        choice(join1(choice($._typed_variable, $.expression, "*"), ",")),
+      ),
 
-    _id: $ => /[a-zA-Z_][a-zA-Z0-9_]*/
-  }
-})
+    _method_call: ($) => prec(PREC.CALL, seq(join1($.identifier, "."), $.args)),
+
+    instruction_conditional: ($) =>
+      choice(
+        seq(
+          "if",
+          choice(round_wrap($._if_condition), $._if_condition),
+          $.body,
+          "else",
+          $.body,
+        ),
+        seq(
+          "match",
+          $._id,
+          curly_wrap(
+            repeat1(seq("case", $._id, "=>", choice($.instruction, $.body))),
+          ),
+        ),
+      ),
+
+    _if_condition: ($) =>
+      choice($.expression, seq($._typed_variable, "|", $.expression)),
+
+    instruction_loop: ($) =>
+      seq(
+        choice("while", seq("for", $.assignment, choice("to", "downto"))),
+        $.expression,
+        $.body,
+      ),
+
+    instruction_spec: ($) => seq(choice("assert", "assume"), $.expression, ";"),
+
+    label: ($) =>
+      prec.right(
+        seq("label", $.identifier, ":", choice($.body, repeat($.instruction))),
+      ),
+
+    return: ($) => seq("return", optional(join1($.expression, ",")), ";"),
+
+    yield: ($) => seq("yield", optional(join1($.expression, ",")), ";"),
+
+    continue: ($) => seq("continue", ";"),
+
+    break: ($) => seq("break", ";"),
+
+    expression: ($) =>
+      prec(
+        PREC.EXPRESSION,
+        choice(
+          join1($._id, $._infix_operator),
+          $._id,
+          $._integer,
+          $._method_call,
+        ),
+      ),
+
+    _infix_operator: ($) =>
+      choice(
+        "<==>",
+        "==>",
+        "<==",
+        "&&",
+        "||",
+        "!",
+        "==",
+        "!=",
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "!!",
+        "in",
+        "!in",
+        "+",
+        "-",
+        "*",
+        "/",
+        "%",
+        "|",
+        "&",
+        "^",
+        "<<",
+        ">>",
+      ),
+
+    args: ($) =>
+      seq(
+        round_wrap(
+          optional(join1(choice($._typed_variable, $.expression), ",")),
+        ),
+      ),
+
+    _typed_variable: ($) => seq($.identifier, $._typing),
+
+    _typing: ($) => seq(":", $.type),
+
+    type: ($) => $._id,
+
+    identifier: ($) => $._id,
+
+    _integer: ($) => seq(optional(token.immediate(choice("-", "+"))), /[0-9]+/),
+
+    _id: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+  },
+});
