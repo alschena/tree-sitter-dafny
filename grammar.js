@@ -216,13 +216,16 @@ module.exports = grammar({
       ),
     ),
 
-    instruction_loop: $ => choice(
-      seq(
+    instruction_loop: $ => seq(
+      choice(
         "while",
-        $.expression,
-        $.body,
+        seq("for",
+          $.assignment,
+          choice("to", "downto"),
+        ),
       ),
-
+      $.expression,
+      $.body,
     ),
 
     instruction_spec: $ => seq(
@@ -271,6 +274,7 @@ module.exports = grammar({
       choice(
         join1($._id, $._infix_operator),
         $._id,
+        $._integer,
         $._method_call,
       ),
     ),
@@ -322,6 +326,11 @@ module.exports = grammar({
     type: $ => $._id,
 
     identifier: $ => $._id,
+
+    _integer: $ => seq(
+      optional(token.immediate(choice("-", "+"))),
+      /[0-9]+/,
+    ),
 
     _id: $ => /[a-zA-Z_][a-zA-Z0-9_]*/
   }

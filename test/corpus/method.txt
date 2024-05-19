@@ -349,4 +349,67 @@ method A()
           (label
             (identifier)
             (body))))))
+===
+Method.  For loop using "to".
+===
+method A()
+{
+  for i := a to b {
+  }
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (instruction_loop
+          (assignment
+            (identifier)
+            (expression))
+          (expression)
+          (body))))))
+===
+Method.  For loop using "downto".
+===
+method A()
+{
+  for i := a downto b {
+  }
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (instruction_loop
+          (assignment
+            (identifier)
+            (expression))
+          (expression)
+          (body))))))
+===
+Method.  For loop with integer assignment.
+===
+method A()
+{
+  for i := 5 downto b {
+  }
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (instruction_loop
+          (assignment
+            (identifier)
+            (expression))
+          (expression)
+          (body))))))
 
