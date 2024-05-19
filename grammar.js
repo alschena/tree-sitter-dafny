@@ -1,3 +1,7 @@
+const PREC = {
+  CALL: 2,
+  EXPRESSION: 2,
+};
 const join1 = (node, separator)  => seq(
   node,
   repeat(seq(separator, node))
@@ -24,127 +28,275 @@ module.exports = grammar({
       )
     ),
 
-    top_level_declaration: $ => choice (
+    top_level_declaration: $ => choice(
         $.method,
-        // $.function,
-        $.predicate
+        $.function,
+        $.predicate,
+        $.module,
+        $.constant_declaration,
       ),
-      // optional($.notes),
-      // optional(field('mark', $.header_mark)),
-      // 'class',
-      // $.class_name,
-      // optional($.formal_generics),
-      // optional($.obsolete),
-      // repeat($.inheritance),
-      // repeat($.creation_clause),
-      // optional($.converters),
-      // repeat($.feature_clause),
-      // optional($.invariant),
-      // optional($.notes),
-      // 'end'
 
-    method: $ => seq (
-      "method",
-      $.id,
-      "(",
-      optional($.args),
-      ")",
-      optional (seq(
-        "returns",
-        "(",
-        $.args,
-        ")"
-      )),
-      optional(repeat($.specs)),
+    module : $ => seq(
+      "module",
       "{",
-      // optional(repeat($.instruction)),
+      repeat ($.top_level_declaration),
       "}"
     ),
 
-    // function: $ => seq (
-    //   "function",
-    //   $.id,
-    //   "(",
-    //   optional($.args),
-    //   ")",
-    //   $.typing,
-    //   optional(repeat($.specs)),
-    //   "{",
-    //   repeat($.expression),
-    //   "}",
-    // ),
+    method: $ => seq(
+      "method",
+      $.top_level_name,
+      $.args,
+      optional(seq(
+        "returns",
+        $.args,
+      )),
+      repeat($.specification),
+      $.body
+    ),
 
-    predicate: $ => seq (
-      "predicate",
-      $.id,
-      "(",
-      optional($.args),
-      ")",
-      optional(repeat($.specs)),
+    function: $ => seq(
+      "function",
+      $.top_level_name,
+      $.args,
+      $.typing,
+      repeat($.specification),
       "{",
-      // repeat($.expression),
+      repeat($.expression),
       "}",
     ),
 
-    specs: $ => seq (
-      choice(
-        "ensures",
-        "requires",
-        "decreases",
-        "invariant",
+    predicate: $ => seq(
+      "predicate",
+      $.top_level_name,
+      $.args,
+      repeat($.specification),
+      $.body
+    ),
+
+    specification: $ => choice(
+      seq(
+        choice(
+          "ensures",
+          "requires",
+          "decreases",
+          "invariant",
+          "modifies",
+          "reads",
+        ),
+        $.expression
       ),
-      $.expression
+      $.forall_spec,
     ),
 
-    // instruction: $ => seq(
-    //   choice(
-    //     $.assignment,
-    //   ),
-    //   ";",
-    // ),
-
-    // assignment: $ => seq (
-    //   $.id,
-    //   ":=",
-    //   $.id,
-    // ),
-
-    expression: $ => choice(
-      $.boolean_expression
-      // $.integer_expression,
+    forall_spec: $ => seq(
+      "forall",
+      choice(
+        seq(
+          $._id,
+          "|",
+          $.expression,
+        ),
+        seq(
+          $._id,
+          "<-",
+          $._id
+        ),
+      ),
+      $.body
     ),
 
-    boolean_expression: $ => seq(
-      join1($.id,$.boolean_operator)
+    body: $ => seq(
+      "{",
+      repeat($.instruction),
+      "}"
     ),
 
-    // integer_expression: $ => choice(
-    // ),
-    boolean_operator: $ => choice (
-      "&",
+    instruction: $ => seq(
+      choice(
+        seq($.variable_declaration, ";"),
+        $.constant_declaration,
+        seq ($.assignment, ";"),
+        $.instruction_conditional,
+        $.instruction_loop,
+        $.instruction_spec,
+        seq($.method_call, ";"),
+        $.return,
+        $.yield,
+        $.continue,
+        $.break,
+      ),
+    ),
+
+    variable_declaration: $ => seq(
+      "var",
+      choice(
+        $.typed_variable,
+        $.assignment,
+      ),
+    ),
+
+    constant_declaration: $ => seq(
+      "const",
+      $.assignment,
+    ),
+
+    assignment: $ => seq(
+      join1(choice(
+        $.variable,
+        $.typed_variable,
+      ), ","),
+      choice(
+        ":=",
+        ":|",
+        ":-"
+      ),
+      choice(
+          join1(choice(
+          $.typed_variable,
+          $.expression,
+          $.method_call,
+          "*"
+        ), ","),
+      ),
+    ),
+
+    method_call: $ => prec(
+      PREC.CALL,
+      seq (
+      $.top_level_name,
+      $.args,
+    )),
+
+    instruction_conditional: $ => choice(
+      seq(
+      "if",
+        choice(
+          $.expression,
+          seq(
+            $.typed_variable,
+            "|",
+            $.method_call,
+          ),
+        ),
+      $.body,
+      "else",
+      $.body
+    ),
+      seq("match",
+        $._id,
+        "{",
+        repeat1(seq(
+          "case",
+          $._id,
+          "=>",
+          choice (
+          $.instruction,
+          $.body
+        ),
+        )),
+        "}"
+      ),
+    ),
+
+    instruction_loop: $ => choice(
+      seq(
+        "while",
+        $.expression,
+        $.body,
+      ),
+
+    ),
+
+    instruction_spec: $ => seq(
+      choice(
+        "assert",
+        "assume",
+      ),
+      $.expression,
+      ";"
+    ),
+
+    return: $ => seq(
+      "return",
+      optional(join1($.expression, ",")),
+      ";"
+    ),
+
+    yield: $=> seq(
+      "yield",
+      optional(join1($.expression, ",")),
+      ";"
+    ),
+
+    continue: $ => seq(
+      "continue",
+      ";"
+    ),
+
+    break: $ => seq(
+      "break",
+      ";"
+    ),
+
+    expression: $ => prec(
+      PREC.EXPRESSION,
+      choice(
+        join1($._id, $._infix_operator),
+        $._id,
+      ),
+    ),
+
+    _infix_operator: $ => choice (
+      "<==>",
+      "==>",
+      "<==",
+      "&&",
+      "||",
+      "!",
+      "==",
+      "!=",
+      "<",
       "<=",
+      ">",
       ">=",
+      "!!",
+      "in",
+      "!in",
+      "+",
+      "-",
+      "*",
+      "/",
+      "%",
+      "|",
+      "&",
+      "^",
+      "<<",
+      ">>"
     ),
 
-    // binary_operator: $ => choice(
-    //   "+",
-    //   "-"
-    // ),
+    args: $ => seq(
+      "(",
+      optional (join1($.typed_variable, ",")),
+      ")",
+    ),
 
-    args: $ => join1($.typed_expression, ","),
-
-    typed_expression: $ => seq(
-      $.id,
+    typed_variable: $ => seq(
+      $.variable,
       $.typing
     ),
 
     typing: $ => seq(
       ":",
-      $.type
+      $._type
     ),
 
-    type: $ => $.id,
+    _type: $ => $._id,
 
-    id: $ => /[a-zA-Z_][a-zA-Z0-9_]*/
+    variable: $ => $._id,
+
+    top_level_name: $ => $._id,
+
+    _id: $ => /[a-zA-Z_][a-zA-Z0-9_]*/
   }
 })

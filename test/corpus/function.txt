@@ -1,0 +1,19 @@
+===
+Function.  Unnamend result.
+===
+function A (a: int, b: int): int
+{
+}
+---
+(source_file
+  (top_level_declaration
+    (function
+      (top_level_name)
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (typing))))

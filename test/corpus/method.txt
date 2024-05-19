@@ -1,0 +1,355 @@
+===
+Method.  Empty, no arguments, no return variables.
+===
+method A () {}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body))))
+===
+Method.  More than one argument, no return variables.
+===
+method A (a: Int, b: Int) {}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (body))))
+===
+Method.  More than one argument, more than one return variables.
+===
+method A (a: Int, b: Int) returns (c: Int, d: Int) {}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (body))))
+===
+Method.  Simple specification
+===
+method A (a: Int, b: Int) returns (c: Int, d: Int)
+  requires a <= b
+{
+
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (specification
+        (expression))
+      (body))))
+===
+Method.  Simple assignment.
+===
+method A (a: Int, b: Int) returns (c: Int, d: Int)
+  requires a <= b
+{
+  c := a;
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (specification
+        (expression))
+      (body
+        (instruction
+          (assignment
+            (variable)
+            (expression)))))))
+===
+Method.  Multiple parallel assignment.
+===
+method A (a: Int, b: Int) returns (c: Int, d: Int)
+  requires a <= b
+{
+  c, d := a, b;
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (args
+        (typed_variable
+          (variable)
+          (typing))
+        (typed_variable
+          (variable)
+          (typing)))
+      (specification
+        (expression))
+      (body
+        (instruction
+          (assignment
+            (variable)
+            (variable)
+            (expression)
+            (expression)))))))
+===
+Method.  Assignment with method call as source.
+===
+method A () {
+  a := m ();
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (assignment
+            (variable)
+            (method_call
+              (top_level_name)
+              (args))))))))
+===
+Method.  Variable declaration and assignment.
+===
+method A () {
+  var a := b;
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (variable_declaration
+            (assignment
+              (variable)
+              (expression))))))))
+===
+Method.  Empty if instruction.
+===
+method A () {
+  if a <= b {
+  } else {
+  }
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (instruction_conditional
+            (expression)
+            (body)
+            (body)))))))
+===
+Method.  Match conditional.
+===
+method A() {
+  match a {
+    case j => { b := j; }
+    case k => { b := k; }
+  }
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (instruction_conditional
+            (body
+              (instruction
+                (assignment
+                  (variable)
+                  (expression))))
+            (body
+              (instruction
+                (assignment
+                  (variable)
+                  (expression))))))))))
+===
+Method.  While loop
+===
+method A() {
+  while a < b {}
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (instruction_loop
+            (expression)
+            (body)))))))
+===
+Method.  Assert statement
+===
+method A() {
+  assert a < b;
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (instruction_spec
+            (expression)))))))
+===
+Method.  Assume statement
+===
+method A() {
+  assume a < b;
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (instruction_spec
+            (expression)))))))
+===
+Method.  yield statement.
+===
+method A() {
+  yield a, b;
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (yield
+            (expression)
+            (expression)))))))
+===
+Method.  Return statement.
+===
+method A() {
+  return a, b;
+}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (body
+        (instruction
+          (return
+            (expression)
+            (expression)))))))
+===
+Method.  Forall such as specification.
+===
+method A()
+  forall a | i < j {}
+{}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (specification
+        (forall_spec
+          (expression)
+          (body)))
+      (body))))
+===
+Method.  Forall in specification.
+===
+method A()
+  forall e <- s {}
+{}
+---
+(source_file
+  (top_level_declaration
+    (method
+      (top_level_name)
+      (args)
+      (specification
+        (forall_spec
+          (body)))
+      (body))))
+
+
