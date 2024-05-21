@@ -40,9 +40,22 @@ module.exports = grammar({
         $.predicate,
         $.module,
         $.constant_declaration,
+        $.trait,
       ),
 
     module: ($) => seq("module", curly_wrap(repeat($._top_level_declaration))),
+
+    trait: ($) =>
+      seq(
+        "trait",
+        $.identifier,
+        optional($.generic),
+        optional($.extension),
+        curly_wrap(repeat($._top_level_declaration)),
+      ),
+
+    generic: ($) => seq("<", join1($.identifier, ","), ">"),
+    extension: ($) => seq("extends", join1($.identifier, ",")),
 
     method: ($) =>
       seq(

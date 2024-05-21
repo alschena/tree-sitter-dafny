@@ -1,0 +1,43 @@
+===
+Trait.  Empty
+===
+trait A {}
+---
+(source_file
+  (trait
+    (identifier)))
+===
+Trait.  Single generic.
+===
+trait A<T> {}
+---
+(source_file
+  (trait
+    (identifier)
+    (generic
+      (identifier))))
+===
+Trait.  Multiple generic.
+===
+trait A<T,U> {}
+---
+(source_file
+  (trait
+    (identifier)
+    (generic
+      (identifier)
+      (identifier))))
+===
+Trait.  Multiple extension.
+===
+trait A<T,U> extends J, K {}
+---
+(source_file
+  (trait
+    (identifier)
+    (generic
+      (identifier)
+      (identifier))
+    (extension
+      (identifier)
+      (identifier))))
