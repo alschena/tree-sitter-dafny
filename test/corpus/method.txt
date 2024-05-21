@@ -1,5 +1,5 @@
 ===
-Method.  Empty, no arguments, no return identifiers.
+Empty, no arguments, no return identifiers.
 ===
 method A () {}
 ---
@@ -9,7 +9,7 @@ method A () {}
       (args)
       (body)))
 ===
-Method.  More than one argument, no return identifiers.
+More than one argument, no return identifiers.
 ===
 method A (a: Int, b: Int) {}
 ---
@@ -23,7 +23,7 @@ method A (a: Int, b: Int) {}
           (type))
       (body)))
 ===
-Method.  More than one argument, more than one return identifiers.
+More than one argument, more than one return identifiers.
 ===
 method A (a: Int, b: Int) returns (c: Int, d: Int) {}
 ---
@@ -42,7 +42,7 @@ method A (a: Int, b: Int) returns (c: Int, d: Int) {}
           (type))
       (body)))
 ===
-Method.  Simple specification
+Simple specification
 ===
 method A (a: Int, b: Int) returns (c: Int, d: Int)
   requires a <= b
@@ -67,7 +67,7 @@ method A (a: Int, b: Int) returns (c: Int, d: Int)
         (expression))
       (body)))
 ===
-Method.  Simple assignment.
+Simple assignment.
 ===
 method A (a: Int, b: Int) returns (c: Int, d: Int)
   requires a <= b
@@ -96,7 +96,7 @@ method A (a: Int, b: Int) returns (c: Int, d: Int)
             (identifier)
             (expression))))))
 ===
-Method.  Multiple parallel assignment.
+Multiple parallel assignment.
 ===
 method A (a: Int, b: Int) returns (c: Int, d: Int)
   requires a <= b
@@ -127,7 +127,7 @@ method A (a: Int, b: Int) returns (c: Int, d: Int)
             (expression)
             (expression))))))
 ===
-Method.  Assignment with method call as source.
+Assignment with method call as source.
 ===
 method A () {
   a := m ();
@@ -145,7 +145,7 @@ method A () {
               (identifier)
               (args)))))))
 ===
-Method.  identifier declaration and assignment.
+identifier declaration and assignment.
 ===
 method A () {
   var a := b;
@@ -162,7 +162,7 @@ method A () {
               (identifier)
               (expression)))))))
 ===
-Method.  Empty if instruction.
+Empty if instruction.
 ===
 method A () {
   if a <= b {
@@ -181,7 +181,7 @@ method A () {
             (body)
             (body))))))
 ===
-Method.  Match conditional.
+Match conditional.
 ===
 method A() {
   match a {
@@ -208,7 +208,7 @@ method A() {
                   (identifier)
                   (expression)))))))))
 ===
-Method.  While loop
+While loop
 ===
 method A() {
   while a < b {}
@@ -224,7 +224,7 @@ method A() {
             (expression)
             (body))))))
 ===
-Method.  Assert statement
+Assert statement
 ===
 method A() {
   assert a < b;
@@ -239,7 +239,7 @@ method A() {
           (instruction_spec
             (expression))))))
 ===
-Method.  Assume statement
+Assume statement
 ===
 method A() {
   assume a < b;
@@ -254,7 +254,7 @@ method A() {
           (instruction_spec
             (expression))))))
 ===
-Method.  yield statement.
+yield statement.
 ===
 method A() {
   yield a, b;
@@ -270,7 +270,7 @@ method A() {
             (expression)
             (expression))))))
 ===
-Method.  Return statement.
+Return statement.
 ===
 method A() {
   return a, b;
@@ -286,7 +286,7 @@ method A() {
             (expression)
             (expression))))))
 ===
-Method.  Forall specification.
+Forall specification.
 ===
 method A()
   forall a :: i < j
@@ -301,7 +301,7 @@ method A()
           (expression)))
       (body)))
 ===
-Method.  Forall instruction.
+Forall instruction.
 ===
 method A()
 {
@@ -317,7 +317,7 @@ method A()
           (instruction_forall
             (body))))))
 ===
-Method.  Label without parentheses.
+Label without parentheses.
 ===
 method A()
 {
@@ -333,7 +333,7 @@ method A()
           (label
             (identifier))))))
 ===
-Method.  Label parenthesised.
+Label parenthesised.
 ===
 method A()
 {
@@ -350,7 +350,7 @@ method A()
             (identifier)
             (body))))))
 ===
-Method.  For loop using "to".
+For loop using "to".
 ===
 method A()
 {
@@ -371,7 +371,7 @@ method A()
           (expression)
           (body))))))
 ===
-Method.  For loop using "downto".
+For loop using "downto".
 ===
 method A()
 {
@@ -392,7 +392,7 @@ method A()
           (expression)
           (body))))))
 ===
-Method.  For loop with integer assignment.
+For loop with integer assignment.
 ===
 method A()
 {
