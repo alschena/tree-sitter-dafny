@@ -197,16 +197,46 @@ method A() {
       (body
         (instruction
           (instruction_conditional
+            (identifier)
             (body
               (instruction
                 (assignment
                   (identifier)
                   (expression))))
+            (identifier)
             (body
               (instruction
                 (assignment
                   (identifier)
                   (expression)))))))))
+===
+Match conditional no-braces.
+===
+method A() {
+  match a
+  case Red =>
+    b := a;
+  case Blue =>
+    b := a;
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (instruction_conditional
+          (identifier)
+          (instruction
+            (assignment
+              (identifier)
+              (expression)))
+          (identifier)
+          (instruction
+            (assignment
+              (identifier)
+              (expression))))))))
 ===
 While loop
 ===

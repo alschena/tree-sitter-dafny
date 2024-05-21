@@ -147,21 +147,29 @@ module.exports = grammar({
     _method_call: ($) => prec(PREC.CALL, seq(join1($.identifier, "."), $.args)),
 
     instruction_conditional: ($) =>
-      choice(
-        seq(
-          "if",
-          choice(round_wrap($._if_condition), $._if_condition),
-          $.body,
-          "else",
-          $.body,
-        ),
-        seq(
-          "match",
-          $._id,
-          curly_wrap(
-            repeat1(seq("case", $._id, "=>", choice($.instruction, $.body))),
+      prec.right(
+        choice(
+          seq(
+            "if",
+            choice(round_wrap($._if_condition), $._if_condition),
+            $.body,
+            "else",
+            $.body,
+          ),
+          seq(
+            "match",
+            $._id,
+            choice(
+              curly_wrap(repeat1($._case_statement)),
+              repeat1($._case_statement),
+            ),
           ),
         ),
+      ),
+
+    _case_statement: ($) =>
+      prec.right(
+        seq("case", $.identifier, "=>", choice(repeat($.instruction), $.body)),
       ),
 
     _if_condition: ($) =>
