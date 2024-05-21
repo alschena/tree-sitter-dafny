@@ -1,6 +1,7 @@
 const PREC = {
-  CALL: 2,
-  EXPRESSION: 2,
+  CALL: 4,
+  EXPRESSION: 3,
+  LAMBDA: 2,
 };
 
 const join1 = (node, separator) => seq(node, repeat(seq(separator, node)));
@@ -12,6 +13,7 @@ const round_wrap = (node) => seq("(", node, ")");
 module.exports = grammar({
   name: "dafny",
   extras: ($) => [/\s+/, $.comment],
+  conflicts: ($) => [[$.lambda, $.assignment]],
   rules: {
     source_file: ($) => repeat($._top_level_declaration),
 
@@ -182,6 +184,18 @@ module.exports = grammar({
           $._id,
           $._integer,
           $._method_call,
+          $.lambda,
+    lambda: ($) =>
+      prec.left(
+        PREC.LAMBDA,
+        seq(
+          choice(
+            round_wrap(join1(choice($._typed_variable, $.identifier), ",")),
+            join1(choice($._typed_variable, $.identifier), ","),
+          ),
+          optional($.specification),
+          "=>",
+          choice($.expression, curly_wrap($.expression), $.body),
         ),
       ),
 

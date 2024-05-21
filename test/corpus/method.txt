@@ -412,4 +412,66 @@ method A()
             (expression))
           (expression)
           (body))))))
+===
+Lambda untyped
+===
+method A() {
+  var a := i => i*i;
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (variable_declaration
+          (assignment
+            (identifier)
+            (expression
+              (lambda
+                (identifier)
+                (expression)))))))))
+===
+Lambda typed.
+===
+method A() {
+  var a := i: int => i*i;
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (variable_declaration
+          (assignment
+            (identifier)
+            (expression
+              (lambda
+                (identifier)
+                (type)
+                (expression)))))))))
+===
+Lambda with expression in braces.
+===
+method A() {
+  var a := i: int => {i*i};
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (variable_declaration
+          (assignment
+            (identifier)
+            (expression
+              (lambda
+                (identifier)
+                (type)
+                (expression)))))))))
 
