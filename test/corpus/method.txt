@@ -474,4 +474,25 @@ method A() {
                 (identifier)
                 (type)
                 (expression)))))))))
+===
+Allocation.
+===
+method A() {
+  var a := new MyClass;
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (variable_declaration
+          (assignment
+            (identifier)
+            (expression
+              (allocation
+                (expression)))))))))
+
+
 

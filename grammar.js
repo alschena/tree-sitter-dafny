@@ -198,6 +198,12 @@ module.exports = grammar({
           $._integer,
           $._method_call,
           $.lambda,
+          $.allocation,
+        ),
+      ),
+
+    allocation: ($) => seq("new", $.expression),
+
     lambda: ($) =>
       prec.left(
         PREC.LAMBDA,
