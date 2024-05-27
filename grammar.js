@@ -43,7 +43,16 @@ module.exports = grammar({
         $.trait,
       ),
 
-    module: ($) => seq("module", curly_wrap(repeat($._top_level_declaration))),
+    module: ($) =>
+      seq(
+        "module",
+        optional(curly_wrap(repeat1($.opt))),
+        $.identifier,
+        curly_wrap(repeat($._top_level_declaration)),
+      ),
+
+    opt: ($) =>
+      seq(token.immediate(":"), $.identifier, choice($._string, $._id)),
 
     trait: ($) =>
       seq(
@@ -271,6 +280,8 @@ module.exports = grammar({
     identifier: ($) => $._id,
 
     _integer: ($) => seq(optional(token.immediate(choice("-", "+"))), /[0-9]+/),
+
+    _string: ($) => choice(/".*"/, /'.*'/),
 
     _id: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
   },

@@ -1,0 +1,18 @@
+===
+Empty.
+===
+module M {}
+---
+(source_file
+  (module
+    (identifier)))
+===
+Empty, with options.
+===
+module {:options "--function-syntax:4"} M {}
+---
+(source_file
+  (module
+    (opt
+      (identifier))
+    (identifier)))
