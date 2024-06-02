@@ -35,6 +35,7 @@ module.exports = grammar({
 
     _top_level_declaration: ($) =>
       choice(
+        $.datatype,
         $.method,
         $.function,
         $.predicate,
@@ -42,6 +43,9 @@ module.exports = grammar({
         $.constant_declaration,
         $.trait,
       ),
+
+    datatype: ($) =>
+      seq("datatype", $.identifier, "=", join1($.identifier, "|")),
 
     module: ($) =>
       seq(
