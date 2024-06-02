@@ -523,6 +523,15 @@ method A() {
             (expression
               (allocation
                 (expression)))))))))
-
-
-
+===
+Options.
+===
+method {:test} m() {}
+---
+(source_file
+  (method
+    (opt
+      (identifier))
+    (identifier)
+    (args)
+    (body)))

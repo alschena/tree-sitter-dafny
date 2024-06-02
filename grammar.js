@@ -52,7 +52,13 @@ module.exports = grammar({
       ),
 
     opt: ($) =>
-      seq(token.immediate(":"), $.identifier, choice($._string, $._id)),
+      prec.left(
+        seq(
+          token.immediate(":"),
+          $.identifier,
+          optional(choice($._string, $._id)),
+        ),
+      ),
 
     trait: ($) =>
       seq(
@@ -69,6 +75,7 @@ module.exports = grammar({
     method: ($) =>
       seq(
         "method",
+        optional(curly_wrap(repeat1($.opt))),
         $.identifier,
         $.args,
         optional(seq("returns", $.args)),
