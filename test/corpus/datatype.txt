@@ -1,0 +1,10 @@
+===
+Two possibilities.
+===
+datatype C = A | B
+---
+(source_file
+  (datatype
+    (identifier)
+    (identifier)
+    (identifier)))
