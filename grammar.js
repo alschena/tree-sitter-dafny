@@ -10,6 +10,8 @@ const curly_wrap = (node) => seq("{", node, "}");
 
 const round_wrap = (node) => seq("(", node, ")");
 
+const angular_wrap = (node) => seq("<", node, ">");
+
 module.exports = grammar({
   name: "dafny",
   extras: ($) => [/\s+/, $.comment],
@@ -81,7 +83,7 @@ module.exports = grammar({
         curly_wrap(repeat($._top_level_declaration)),
       ),
 
-    generic: ($) => seq("<", join1($.identifier, ","), ">"),
+    generic: ($) => seq(angular_wrap(join1($.identifier, ","))),
     extension: ($) => seq("extends", join1($.identifier, ",")),
 
     method: ($) =>
