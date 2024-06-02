@@ -35,6 +35,7 @@ module.exports = grammar({
 
     _top_level_declaration: ($) =>
       choice(
+        $.class,
         $.datatype,
         $.method,
         $.function,
@@ -44,6 +45,12 @@ module.exports = grammar({
         $.variable_declaration,
         $.trait,
       ),
+
+    class: ($) => seq("class", $.identifier, curly_wrap(repeat($._field))),
+
+    _field: ($) => seq(optional($.decorator), choice($.constant_declaration)),
+
+    decorator: ($) => choice("static", "ghost"),
 
     datatype: ($) =>
       seq("datatype", $.identifier, "=", join1($.identifier, "|")),
@@ -156,7 +163,8 @@ module.exports = grammar({
     variable_declaration: ($) =>
       seq("var", choice($._typed_variable, $.assignment)),
 
-    constant_declaration: ($) => seq("const", $.assignment),
+    constant_declaration: ($) =>
+      seq("const", choice($._typed_variable, $.assignment)),
 
     assignment: ($) =>
       seq(

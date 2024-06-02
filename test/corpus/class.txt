@@ -1,0 +1,31 @@
+===
+Empty
+===
+class A {}
+---
+(source_file
+  (class
+    (identifier)))
+===
+Constant field.
+===
+class A { const f: int }
+---
+(source_file
+  (class
+    (identifier)
+    (constant_declaration
+      (identifier)
+      (type))))
+===
+Static constant field.
+===
+class A { static const f: int }
+---
+(source_file
+  (class
+    (identifier)
+    (decorator)
+    (constant_declaration
+      (identifier)
+      (type))))
