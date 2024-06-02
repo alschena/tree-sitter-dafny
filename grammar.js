@@ -41,6 +41,7 @@ module.exports = grammar({
         $.predicate,
         $.module,
         $.constant_declaration,
+        $.variable_declaration,
         $.trait,
       ),
 
