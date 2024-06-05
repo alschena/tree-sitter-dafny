@@ -300,7 +300,7 @@ module.exports = grammar({
 
     _typing: ($) => seq(":", $.type),
 
-    type: ($) => $._id,
+    type: ($) => seq($._id, optional(angular_wrap($._id))),
 
     identifier: ($) => $._id,
 

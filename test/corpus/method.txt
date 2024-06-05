@@ -535,3 +535,22 @@ method {:test} m() {}
     (identifier)
     (args)
     (body)))
+===
+Type parameter.
+===
+method A () {
+  var a: set<bool> := b[2];
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (variable_declaration
+          (assignment
+            (identifier)
+            (type)
+            (expression)))))))
+
