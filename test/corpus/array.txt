@@ -1,0 +1,17 @@
+===
+Access element in array.
+===
+method A () {
+  var a := b[2];
+}
+---
+(source_file
+  (method
+    (identifier)
+    (args)
+    (body
+      (instruction
+        (variable_declaration
+          (assignment
+            (identifier)
+            (expression)))))))

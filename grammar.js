@@ -7,9 +7,8 @@ const PREC = {
 const join1 = (node, separator) => seq(node, repeat(seq(separator, node)));
 
 const curly_wrap = (node) => seq("{", node, "}");
-
 const round_wrap = (node) => seq("(", node, ")");
-
+const square_wrap = (node) => seq("[", node, "]");
 const angular_wrap = (node) => seq("<", node, ">");
 
 module.exports = grammar({
@@ -238,8 +237,12 @@ module.exports = grammar({
           $._method_call,
           $.lambda,
           $.allocation,
+          $._array,
         ),
       ),
+
+    _array: ($) =>
+      seq($._id, square_wrap(choice($._id, $._integer, $._string))),
 
     allocation: ($) => seq("new", $.expression),
 
